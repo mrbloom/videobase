@@ -1,0 +1,18 @@
+.input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.mirror {
+    opacity: 0;
+    white-space: pre;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.resizable {
+    background-color: transparent;
+    border: 1px solid black;
+}
