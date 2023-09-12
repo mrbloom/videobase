@@ -1,18 +1,9 @@
-.input-wrapper {
-    position: relative;
-    display: inline-block;
+.inline-div {
+    display: inline-block; /* or use display: inline; */
 }
 
-.mirror {
-    opacity: 0;
-    white-space: pre;
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.resizable {
-    background-color: transparent;
-    border: 1px solid black;
+.form-group label,
+.form-group input {
+    display: block;
+    margin-bottom: 8px;  /* Adjust as needed */
 }

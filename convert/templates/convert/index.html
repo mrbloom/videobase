@@ -6,96 +6,50 @@
     <title>Video Converter</title>
     <link rel="stylesheet" href="{{ url_for('convert.static', filename='css/styles.css') }}">
 
-    <script>
-        function getPath(bigTree,smallTree){
-            const first = smallTree[0].webkitRelativePath
-            let bigPath = [...bigTree].filter(branch => branch.webkitRelativePath.includes(first))[0].webkitRelativePath
-            return `${bigPath.replace(first,"")}${first.split("/")[0]}`;
-        }
-
-        function extractPathTo(bigName,smallName,pathFieldName){
-            bigFolderFiles = document.getElementById(bigName).files;
-            smallFolderFiles = document.getElementById(smallName).files;
-            path = getPath(bigFolderFiles, smallFolderFiles);
-            document.getElementById(pathFieldName).value = path;
-        }
-
-        function extractFFMPEG(){
-            extractPathTo('root_folder','ffmpeg_folder','derived_ffmpeg_path');
-             // Manually call mirrorContent after updating the value
-            const path = document.getElementById('derived_ffmpeg_path');
-            mirrorContent(path, 'ffmpeg_mirror');
-        }
-
-        function extractVideos(){
-            extractPathTo('root_folder','video_folder','derived_video_path');
-            // Manually call mirrorContent after updating the value
-            const path = document.getElementById('derived_video_path');
-            mirrorContent(path, 'video_mirror');
-        }
-
-        function extractInputFolder(){
-            extractPathTo('root_folder','input_folder','derived_input_path');
-            // Manually call mirrorContent after updating the value
-            const path = document.getElementById('derived_input_path');
-            mirrorContent(path, 'input_mirror');
-        }
-
-
-
-        //CSS functions
-        function mirrorContent(input, mirrorId) {
-            document.getElementById(mirrorId).textContent = input.value;
-            input.style.width = document.getElementById(mirrorId).offsetWidth + 'px';
-        }
-    </script>
 </head>
 <body>
-    <h1>Video Converter Interface</h1>
+    <h2>Video Converter</h2>
 
     <form action="{{ url_for('.index') }}" method="post">
         <p>
-            <label for="root_folder">Select root disk (containing ffmpeg and videos):</label><br>
-            <input type="file" id="root_folder" name="root_folder" webkitdirectory>
+
+                <div class="form-group">
+                <label for="ffmpeg_folder">Select FFMPEG bin:</label>
+                <input type="text" id="ffmpeg_folder" name="ffmpeg_folder">
+                </div>
+
         </p>
 
         <p>
-            <div class="input-wrapper">
-                <label for="ffmpeg_folder">Select FFMPEG bin:</label><br>
-                <span id="ffmpeg_mirror" class="mirror"></span>
-                <input type="text" id="derived_ffmpeg_path" name="derived_ffmpeg_path" class="resizable" oninput="mirrorContent(this, 'ffmpeg_mirror')">
-                <input type="file" id="ffmpeg_folder" name="ffmpeg_folder" onchange="extractFFMPEG()" webkitdirectory>
+            <div class="inline-div">
+                <div class="form-group">
+                <label for="dropbox_folder">Select DROPBOX folder:</label>
+                <input type="text" id="dropbox_folder" name="dropbox_folder">
+
+                </div>
+    </div>
+            <div class="inline-div">
+                <div class="form-group">
+                <label for="access_token">Access toke to dropbox:</label>
+                <input type="text" id="access_token" name="access_token">
             </div>
-        </p>
-
-        <p>
-            <div class="input-wrapper">
-                <label for="dropbox_video_path">Select DROPBOX folder:</label><br>
-                <span id="dropbox_video_mirror" class="mirror"></span>
-                <input type="text" id="dropbox_video_path" name="dropbox_video_path" class="resizable" oninput="mirrorContent(this, 'dropbox_video_mirror')">
             </div>
             OR
-            <div  class="input-wrapper">
-                <label for="input_folder">Select FFMPEG bin:</label><br>
-                <span id="input_mirror" class="mirror"></span>
-                <input type="text" id="derived_input_path" name="derived_input_path" class="resizable" oninput="mirrorContent(this, 'input_mirror')">
-                <input type="file" id="input_folder" name="input_folder" onchange="extractInputFolder()" webkitdirectory>
+            <div class="inline-div">
+                <div class="form-group">
+                <label for="input_folder">Select local INPUT folder:</label>
+                <input type="text" id="input_folder" name="input_folder">
+            </div>
             </div>
 
         </p>
         <p>
-            <div class="input-wrapper">
-                <label for="access_token">Input access toke to dropbox:</label><br>
-                <span id="access_token_mirror" class="mirror"></span>
-                <input type="text" id="access_token" name="access_token" class="resizable" oninput="mirrorContent(this, 'access_token_mirror')">
-            </div>
+
         </p>
         <p>
-            <div class="input-wrapper">
-                <label for="video_folder">Select local OUTPUT folder:</label><br>
-                <span id="video_mirror" class="mirror"></span>
-                <input type="text" id="derived_video_path" name="derived_video_path" class="resizable" oninput="mirrorContent(this, 'video_mirror')">
-                <input type="file" id="video_folder" name="video_folder" onchange="extractVideos()" webkitdirectory>
+            <div class="form-group">
+                <label for="output_folder">Select local OUTPUT folder:</label>
+                <input type="text" id="output_folder" name="output_folder">
             </div>
         </p>
         <p>

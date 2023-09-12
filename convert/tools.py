@@ -1,14 +1,13 @@
-import requests
-import json
 import os
 import dropbox
 import subprocess
 from tqdm import tqdm
 from threading import Thread
 from queue import Queue
-import time
 import shutil
 import time
+import platform
+import psutil
 
 
 MAX_RETRIES = 3
@@ -226,11 +225,11 @@ def convert_videos_quick_sync(input_directory, output_directory,n_threads=5,slee
 
                     # Execute ffmpeg n_threads command with delay
                     for _ in range(n_threads):
-                        time.sleep(sleep_sek)
                         # subprocess.run(["start","./ffmpeg", "-hwaccel", "qsv", "-c:v", "mpeg2_qsv", "-i", full_path,
                         #             "-c:v", "h264_qsv", "-b:v", "1.5M", "-y", output_temp])
                         subprocess.run(["start","./ffmpeg", "-i", full_path,
                                     "-c:v", "h264", "-b:v", "1.5M", "-y", output_temp])
+                        time.sleep(sleep_sek)
                     # Move the temp file to final location if its size is acceptable (greater than 10000 bytes)
                     if os.path.getsize(output_temp) > 10000:
                         shutil.move(output_temp, output_final)
@@ -247,9 +246,13 @@ def set_folder_name(prefix):
 
 def check_diskspace(folder_path="."):
     BYTES_IN_GB = 10 ** 9  # Bytes per GB
-    """Check disk space for a given path and return free space in GB."""
-    st = os.statvfs(folder_path)
-    free_space_bytes = st.f_bavail * st.f_frsize
+
+    if platform.system() == "Windows":
+        free_space_bytes = psutil.disk_usage(folder_path).free
+    else:
+        st = os.statvfs(folder_path)
+        free_space_bytes = st.f_bavail * st.f_frsize
+
     free_space_gb = free_space_bytes / BYTES_IN_GB
     return free_space_gb
 
