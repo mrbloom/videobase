@@ -6,45 +6,41 @@
     <title>Video Converter</title>
     <link rel="stylesheet" href="{{ url_for('convert.static', filename='css/styles.css') }}">
 
+
 </head>
 <body>
     <h2>Video Converter</h2>
 
     <form action="{{ url_for('.index') }}" method="post">
         <p>
-
-                <div class="form-group">
+            <div class="inline-div form-group">
                 <label for="ffmpeg_folder">Select FFMPEG bin:</label>
                 <input type="text" id="ffmpeg_folder" name="ffmpeg_folder">
-                </div>
-
+            </div>
+            <div class="inline-div form-group">
+                <label for="n_threads">Select number of FFMPEGs:</label>
+                <select id="n_threads" name="n_threads"></select>
+            </div>
+            <div class="inline-div form-group">
+                <label for="delay_sec">Select deley between FFMPEGs in seconds:</label>
+                <input type="number" id="delay_sec" name="delay_sec" value="0"></input>
+            </div>
         </p>
 
         <p>
-            <div class="inline-div">
-                <div class="form-group">
+            <div class="inline-div form-group">
                 <label for="dropbox_folder">Select DROPBOX folder:</label>
                 <input type="text" id="dropbox_folder" name="dropbox_folder">
-
-                </div>
-    </div>
-            <div class="inline-div">
-                <div class="form-group">
+            </div>
+            <div class="inline-div form-group">
                 <label for="access_token">Access toke to dropbox:</label>
                 <input type="text" id="access_token" name="access_token">
             </div>
-            </div>
             OR
-            <div class="inline-div">
-                <div class="form-group">
+            <div class="form-group inline-div">
                 <label for="input_folder">Select local INPUT folder:</label>
                 <input type="text" id="input_folder" name="input_folder">
             </div>
-            </div>
-
-        </p>
-        <p>
-
         </p>
         <p>
             <div class="form-group">
@@ -63,4 +59,15 @@
 
     <p><a href="/">Back to Main Page</a></p>
 </body>
+    <script>
+        const n_threads = {{ n_threads }}
+        const dropdown = document.getElementById('n_threads');
+
+        for (let i = 1; i <= n_threads; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.innerText = i;
+            dropdown.appendChild(option);
+        }
+    </script>
 </html>

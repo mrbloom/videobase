@@ -2,6 +2,8 @@ import os
 from flask import Blueprint, render_template, request
 from . import tools
 
+N_THREADS = 32
+
 convert = Blueprint('convert', __name__, template_folder='templates', static_folder='static')
 
 @convert.route('/', methods=["POST", "GET"])
@@ -12,6 +14,8 @@ def index():
         dropbox_folder = request.form['dropbox_folder']
         access_token = request.form['access_token']
         input_folder = request.form['input_folder']
+        n_threads = int(request.form['n_threads'])
+        delay_sec = int(request.form['delay_sec'])
 
 
         print("FFmpeg folder:", ffmpeg_folder)
@@ -23,7 +27,7 @@ def index():
         if not input_folder and dropbox_folder and access_token:
             tools.convert(ffmpeg_folder, dropbox_folder, output_folder, access_token)
         if not access_token and not dropbox_folder and input_folder:
-            tools.convert_videos_quick_sync(input_folder,output_folder)
+            tools.convert_videos_quick_sync(ffmpeg_folder, input_folder,output_folder, n_threads, delay_sec)
 
 
-    return render_template('convert/index.html')
+    return render_template('convert/index.html', n_threads=N_THREADS)

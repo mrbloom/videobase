@@ -1,4 +1,6 @@
 import os
+import threading
+
 import dropbox
 import subprocess
 from tqdm import tqdm
@@ -8,7 +10,6 @@ import shutil
 import time
 import platform
 import psutil
-
 
 MAX_RETRIES = 3
 RETRY_WAIT = 10  # wait 10 seconds before retrying
@@ -186,53 +187,66 @@ def convert(ffmpeg_path, dropbox_input_folder, local_output_folder, access_token
     downloaded_files_queue.put(None)
     conversion_thread.join()
 
+
 # End of function
 
+def convert_videos_quick_sync(ffmpeg_folder, input_directory, output_directory, n_threads, delay_sec, VIDEO_EXT=".ts",
+                              OUTPUT_EXT=".mp4"):
+    threads = []
+
+    for i in range(n_threads):
+        thread = threading.Thread(target=convert_video_quick_sync,
+                                  args=(
+                                      ffmpeg_folder, n_threads, input_directory, output_directory, VIDEO_EXT,
+                                      OUTPUT_EXT))
+        threads.append(thread)
+        thread.start()
+        time.sleep(delay_sec)
+
+    for thread in threads:
+        thread.join()
 
 
-def convert_videos_quick_sync(input_directory, output_directory,n_threads=5,sleep_sek=240, VIDEO_EXT = ".ts",OUTPUT_EXT = ".mp4"):
+def convert_video_quick_sync(ffmpeg_folder, n_threads, input_directory, output_directory, VIDEO_EXT, OUTPUT_EXT):
+    REQUIRED_SPACE_GB = 1 * n_threads  # in GB
 
-
-    REQUIRED_SPACE_GB = 1*n_threads  # in GB
-
-    """
-    Convert videos from the specified directory and its subdirectories.
-
-    :param input_directory: The root directory to start looking for video files.
-    """
     for root, _, files in os.walk(input_directory):
         for file in files:
             if file.endswith(VIDEO_EXT):
                 full_path = os.path.join(root, file)
+                input_subfolder = root.replace(input_directory + "\\", "")
                 filename, _ = os.path.splitext(file)
 
                 foldername = set_folder_name(filename[:2])
                 if not foldername:
                     continue
 
-                folder_path = os.path.join(output_directory, foldername)
+                folder_path = os.path.join(output_directory, input_subfolder, foldername)
                 if not os.path.exists(folder_path):
-                    os.mkdir(folder_path)
+                    try:
+                        os.makedirs(folder_path)
+                    except OSError as error:
+                        print(error)
 
                 output_temp = os.path.join(root, f"{foldername}_{filename}_SD_1.5Mbit{OUTPUT_EXT}")
                 output_final = os.path.join(folder_path, f"{foldername}_{filename}_SD_1.5Mbit{OUTPUT_EXT}")
 
                 # Only proceed if the output doesn't already exist
-                if not os.path.exists(output_final) and not os.path.exists(output_temp):
-                    if check_diskspace(root) < REQUIRED_SPACE_GB:
-                        print(f"Not enough space on the disk at {root}. Required: {REQUIRED_SPACE_GB}GB.")
-                        continue
+                # Execute ffmpeg n_threads command with delay
+                ffmpeg = os.path.join(ffmpeg_folder, "ffmpeg.exe")
 
-                    # Execute ffmpeg n_threads command with delay
-                    for _ in range(n_threads):
-                        # subprocess.run(["start","./ffmpeg", "-hwaccel", "qsv", "-c:v", "mpeg2_qsv", "-i", full_path,
-                        #             "-c:v", "h264_qsv", "-b:v", "1.5M", "-y", output_temp])
-                        subprocess.run(["start","./ffmpeg", "-i", full_path,
-                                    "-c:v", "h264", "-b:v", "1.5M", "-y", output_temp])
-                        time.sleep(sleep_sek)
-                    # Move the temp file to final location if its size is acceptable (greater than 10000 bytes)
-                    if os.path.getsize(output_temp) > 10000:
-                        shutil.move(output_temp, output_final)
+                if check_diskspace(root) < REQUIRED_SPACE_GB:
+                    print(f"Not enough space on the disk at {root}. Required: {REQUIRED_SPACE_GB}GB.")
+                    break
+                with open(output_temp,"w") as dumb_file:
+                    dumb_file.write("dumb file")
+                # subprocess.run(["start",ffmpeg, "-hwaccel", "qsv", "-c:v", "mpeg2_qsv", "-i", full_path,
+                #             "-c:v", "h264_qsv", "-b:v", "1.5M", "-y", output_temp])
+                subprocess.run(['cmd', '/c', 'start', ffmpeg, "-i", full_path,
+                                "-c:v", "h264", "-b:v", "1.5M", "-y", output_temp])
+            # Move the temp file to final location if its size is acceptable (greater than 10000 bytes)
+            if os.path.getsize(output_temp) > 10000:
+                shutil.move(output_temp, output_final)
 
 
 def set_folder_name(prefix):
@@ -255,6 +269,3 @@ def check_diskspace(folder_path="."):
 
     free_space_gb = free_space_bytes / BYTES_IN_GB
     return free_space_gb
-
-
-
