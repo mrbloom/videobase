@@ -1,6 +1,6 @@
-dropbox~=11.36.2
-Flask~=2.3.3
+dropbox
+Flask
 Requests
-tqdm~=4.66.1
-
-psutil~=5.9.5
+tqdm
+psutil
+ffmpeg

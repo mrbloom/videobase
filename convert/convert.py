@@ -1,6 +1,8 @@
 import os
 from flask import Blueprint, render_template, request
-from . import tools
+
+from .tools import drpbx, lcl
+
 
 N_THREADS = 32
 
@@ -25,9 +27,9 @@ def index():
         print("ACCESS_TOKEN:", access_token)
 
         if not input_folder and dropbox_folder and access_token:
-            tools.convert(ffmpeg_folder, dropbox_folder, output_folder, access_token)
+            drpbx.convert(ffmpeg_folder, dropbox_folder, output_folder, access_token)
         if not access_token and not dropbox_folder and input_folder:
-            tools.convert_videos_quick_sync(ffmpeg_folder, input_folder,output_folder, n_threads, delay_sec)
+            lcl.convert_videos_quick_sync(ffmpeg_folder, input_folder,output_folder, n_threads, delay_sec)
 
 
     return render_template('convert/index.html', n_threads=N_THREADS)
