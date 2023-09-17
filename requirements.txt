@@ -4,3 +4,4 @@ Requests
 tqdm
 psutil
 ffmpeg
+progressbar
