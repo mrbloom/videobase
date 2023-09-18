@@ -30,6 +30,6 @@ def index():
             drpbx.convert(ffmpeg_folder, dropbox_folder, output_folder, access_token)
         if not access_token and not dropbox_folder and input_folder:
             convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec, input_folder,output_folder, "02*.ts")
-
+            convertor.convert()
 
     return render_template('convert/index.html', n_threads=N_THREADS)
