@@ -3,5 +3,5 @@ Flask
 Requests
 tqdm
 psutil
-ffmpeg
-progressbar
+ffmpeg-python
+progressbar2

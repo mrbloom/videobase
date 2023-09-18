@@ -4,13 +4,16 @@ import progressbar
 import threading
 import ffmpeg
 
+from convert.tools.video import FFmpegThread
+
+
 class TestFFMPEGThread(unittest.TestCase):
 
     def setUp(self):
         # This method runs before each test
         # Here, you can set up any required resources
-        self.sample_video_path = 'sample_video.mp4'  # Adjust path as needed
-        self.output_video_path = 'test_output.mp4'
+        self.sample_video_path = "Q:\\temp\\dropbox\\tests\\in\\1.ts"
+        self.output_video_path = "Q:\\temp\\dropbox\\tests\\out\\1.mp4"
 
     def tearDown(self):
         # This method runs after each test
@@ -29,4 +32,5 @@ class TestFFMPEGThread(unittest.TestCase):
         self.assertTrue(os.path.exists(self.output_video_path))
 
 if __name__ == '__main__':
+    # TestFFMPEGThread.test_ffmpeg_thread_conversion()
     unittest.main()

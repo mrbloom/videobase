@@ -32,10 +32,28 @@ class FFmpegThread(threading.Thread):
         free_gb = free / (1024 ** 3)
         return free_gb
 
+    def enough_disk_space(self,path,required_space_gb):
+        output_directory = os.path.dirname(path)
+        try:
+            disk_space = self.check_disk_space(output_directory)
+            if disk_space < required_space_gb:
+                print(f"Not enough space on the disk at {output_directory}. Required: {self.required_space_gb}GB.")
+                return False
+        except FileNotFoundError:
+            # Splitting by os.sep will provide us the list of folders in the path
+            parts = path.split(os.sep)
+
+            # For Windows, it will return the drive. For Linux/Mac, it will return the first folder.
+            disk_letter = parts[0] if parts else None
+            disk_space = self.check_disk_space(os.path.join(disk_letter, os.sep))
+            if disk_space < required_space_gb:
+                return False
+        return True
+
     def run(self):
         # Check if there's enough space on the disk
         output_directory = os.path.dirname(self.output_video_path)
-        if self.check_disk_space(output_directory) < self.required_space_gb:
+        if not self.enough_disk_space(self.output_video_path, self.required_space_gb):
             print(f"Not enough space on the disk at {output_directory}. Required: {self.required_space_gb}GB.")
             return
             # Get total duration of video
