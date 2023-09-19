@@ -12,8 +12,8 @@ class TestFFMPEGThread(unittest.TestCase):
     def setUp(self):
         # This method runs before each test
         # Here, you can set up any required resources
-        self.sample_video_path = "Q:\\temp\\dropbox\\tests\\in\\1.ts"
-        self.output_video_path = "Q:\\temp\\dropbox\\tests\\out\\1.mp4"
+        self.sample_video_path = "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\input.ts"
+        self.output_video_path = "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\out\\output.mp4"
 
     def tearDown(self):
         # This method runs after each test
