@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request
 from .tools import drpbx, video
 
 
-N_THREADS = 32
+N_MAX_THREADS = 32
 
 convert = Blueprint('convert', __name__, template_folder='templates', static_folder='static')
 
@@ -32,4 +32,4 @@ def index():
             convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec, input_folder,output_folder, "02*.ts")
             convertor.convert()
 
-    return render_template('convert/index.html', n_threads=N_THREADS)
+    return render_template('convert/index.html', n_threads=N_MAX_THREADS)
