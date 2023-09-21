@@ -28,10 +28,18 @@ def index():
         print("ACCESS_TOKEN:", access_token)
 
         if dropbox_folder and access_token:
-            convertor = video.FFMPEGDropboxConverter(access_token,ffmpeg_folder,n_threads,delay_sec,input_folder,output_folder,file_mask)
+            convertor = video.FFMPEGDropboxConverter(access_token,ffmpeg_folder,n_threads,delay_sec,
+                                                     {
+                                                         "dropbox_input":dropbox_folder,
+                                                         "input":output_folder,
+                                                         "output":output_folder
+                                                     },
+                                                     file_mask)
             convertor.convert()
         if input_folder and output_folder:
-            convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec, input_folder,output_folder, file_mask)
+            convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec,
+                                              {"input":input_folder,"output":output_folder},
+                                              file_mask)
             convertor.convert()
 
     return render_template('convert/index.html', n_threads=N_MAX_THREADS)

@@ -1,14 +1,20 @@
 import unittest
-from convert.tools.video  import FFMPEGDropboxThread  # Ensure you import from the correct location.
+from convert.tools.video  import FFMPEGDropboxThread, ConfigDropboxFFmpeg  # Ensure you import from the correct location.
 
 class TestFFMPEGDropboxThread(unittest.TestCase):
     ACCESS_TOKEN = input("Enter your_real_dropbox_access_token :")
 
     def setUp(self):
-        self.access_token = self.ACCESS_TOKEN
-        self.dropbox_path = "/andriyaka/02_2022_12_20-14_30_00.ts"  # Ensure this is the correct path.
-        self.output_video_path = "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\dropbox\\1.mp4"  # Ensure you have write permissions.
-        self.thread = FFMPEGDropboxThread(self.access_token, self.dropbox_path, self.output_video_path)
+        self.config = ConfigDropboxFFmpeg(
+            "/andriyaka/2.ts",
+            "",
+            self.ACCESS_TOKEN,
+            "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\dropbox\\2.ts",
+            "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\dropbox\\2.mp4",
+            {},
+            {'vcodec': 'h264', 'video_bitrate': '1.5M'}
+        )
+        self.thread = FFMPEGDropboxThread(self.config)
 
     def test_run_fetches_video_from_dropbox(self):
         # Just running the actual function.
