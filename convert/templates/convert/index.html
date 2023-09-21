@@ -1,67 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Converter</title>
-    <link rel="stylesheet" href="{{ url_for('convert.static', filename='css/styles.css') }}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Video Converter</title>
+        <link rel="stylesheet" href="{{ url_for('convert.static', filename='css/styles.css') }}">
 
 
-</head>
-<body>
-    <h2>Video Converter</h2>
+    </head>
+    <body>
+        <h2>Video Converter</h2>
 
-    <form action="{{ url_for('.index') }}" method="post">
-        <p>
-            <div class="inline-div form-group">
-                <label for="ffmpeg_folder">Select FFMPEG bin:</label>
-                <input type="text" id="ffmpeg_folder" name="ffmpeg_folder">
-            </div>
-            <div class="inline-div form-group">
-                <label for="n_threads">Select number of FFMPEGs:</label>
-                <select id="n_threads" name="n_threads"></select>
-            </div>
-            <div class="inline-div form-group">
-                <label for="delay_sec">Select deley between FFMPEGs in seconds:</label>
-                <input type="number" id="delay_sec" name="delay_sec" value="0"></input>
-            </div>
-        </p>
+        <form action="{{ url_for('.index') }}" method="post">
+            <p>
+                <div class="inline-div form-group">
+                    <label for="ffmpeg_folder">Select FFMPEG bin:</label>
+                    <input type="text" id="ffmpeg_folder" name="ffmpeg_folder">
+                </div>
+                <div class="inline-div form-group">
+                    <label for="n_threads">Select number of FFMPEGs:</label>
+                    <select id="n_threads" name="n_threads"></select>
+                </div>
+                <div class="inline-div form-group">
+                    <label for="delay_sec">Select deley between FFMPEGs in seconds:</label>
+                    <input type="number" id="delay_sec" name="delay_sec" value="0"></input>
+                </div>
+            </p>
+            <p>
+                <div class="form-group">
+                    <label for="file_mask">File mask for select files for conversion:</label>
+                    <input type="text" id="file_mask" name="file_mask" placeholder="*.ts" value="*.ts">
+                </div>
+            </p>
+            <p>
+                <div class="inline-div form-group">
+                    <label for="dropbox_folder">Select DROPBOX folder:</label>
+                    <input type="text" id="dropbox_folder" name="dropbox_folder">
+                </div>
+                <div class="inline-div form-group">
+                    <label for="access_token">Access toke to dropbox:</label>
+                    <input type="text" id="access_token" name="access_token">
+                </div>
+                OR
+                <div class="form-group inline-div">
+                    <label for="input_folder">Select local INPUT folder:</label>
+                    <input type="text" id="input_folder" name="input_folder">
+                </div>
+            </p>
+            <p>
+                <div class="form-group">
+                    <label for="output_folder">Select local OUTPUT folder (if empty input folder will be used):</label>
+                    <input type="text" id="output_folder" name="output_folder">
+                </div>
+            </p>
+            <p>
+                <input type="submit" value="Start Conversion">
+            </p>
+        </form>
 
-        <p>
-            <div class="inline-div form-group">
-                <label for="dropbox_folder">Select DROPBOX folder:</label>
-                <input type="text" id="dropbox_folder" name="dropbox_folder">
-            </div>
-            <div class="inline-div form-group">
-                <label for="access_token">Access toke to dropbox:</label>
-                <input type="text" id="access_token" name="access_token">
-            </div>
-            OR
-            <div class="form-group inline-div">
-                <label for="input_folder">Select local INPUT folder:</label>
-                <input type="text" id="input_folder" name="input_folder">
-            </div>
-        </p>
-        <p>
-            <div class="form-group">
-                <label for="output_folder">Select local OUTPUT folder:</label>
-                <input type="text" id="output_folder" name="output_folder">
-            </div>
-        </p>
-        <p>
-            <input type="submit" value="Start Conversion">
-        </p>
-    </form>
+        <div id="logs">
+            <!-- Progress logs can be displayed here if needed -->
+        </div>
 
-    <div id="logs">
-        <!-- Progress logs can be displayed here if needed -->
-    </div>
-
-    <p><a href="/">Back to Main Page</a></p>
-</body>
+        <p><a href="/">Back to Main Page</a></p>
+    </body>
     <script>
-        const n_threads = {{ n_threads }}
+        const n_threads = {{ n_threads }};
         const dropdown = document.getElementById('n_threads');
+
+        const inputFolderElem = document.getElementById('input_folder');
+        const outputFolderElem = document.getElementById('output_folder');
+
 
         for (let i = 1; i <= n_threads; i++) {
             const option = document.createElement('option');
@@ -69,5 +78,11 @@
             option.innerText = i;
             dropdown.appendChild(option);
         }
+
+        inputFolderElem.addEventListener('input',function(event){
+            outputFolderElem.value = inputFolderElem.value
+        })
+
+
     </script>
 </html>

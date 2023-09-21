@@ -18,6 +18,7 @@ def index():
         input_folder = request.form['input_folder']
         n_threads = int(request.form['n_threads'])
         delay_sec = int(request.form['delay_sec'])
+        file_mask = request.form['file_mask']
 
 
         print("FFmpeg folder:", ffmpeg_folder)
@@ -26,10 +27,11 @@ def index():
         print("Dropbox folder:",dropbox_folder)
         print("ACCESS_TOKEN:", access_token)
 
-        if not input_folder and dropbox_folder and access_token:
-            drpbx.convert(ffmpeg_folder, dropbox_folder, output_folder, access_token)
-        if not access_token and not dropbox_folder and input_folder:
-            convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec, input_folder,output_folder, "02*.ts")
+        if dropbox_folder and access_token:
+            convertor = video.FFMPEGDropboxConverter(access_token,ffmpeg_folder,n_threads,delay_sec,input_folder,output_folder,file_mask)
+            convertor.convert()
+        if input_folder and output_folder:
+            convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec, input_folder,output_folder, file_mask)
             convertor.convert()
 
     return render_template('convert/index.html', n_threads=N_MAX_THREADS)

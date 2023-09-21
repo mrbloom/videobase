@@ -1,8 +1,5 @@
 import unittest
 import os
-import progressbar
-import threading
-import ffmpeg
 
 from convert.tools.video import FFmpegThread
 
