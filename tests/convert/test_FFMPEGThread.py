@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from convert.tools.video import FFmpegThread, ConfigFFmpeg
+from convert.tools.localvideo import FFmpegThread, ConfigFFmpeg
 
 
 class TestFFMPEGThread(unittest.TestCase):
@@ -13,6 +13,7 @@ class TestFFMPEGThread(unittest.TestCase):
         output_video_path = "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\out\\1.mp4"
         input_keys = {}
         output_keys = {'vcodec': 'h264', 'video_bitrate': '1.5M'}
+
         self.config = ConfigFFmpeg(sample_video_path, output_video_path,input_keys,output_keys)
     def tearDown(self):
         # This method runs after each test

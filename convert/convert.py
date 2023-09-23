@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, render_template, request
 
-from .tools import drpbx, video
+from .tools import dropboxvideo,localvideo
 
 
 N_MAX_THREADS = 32
@@ -19,6 +19,9 @@ def index():
         n_threads = int(request.form['n_threads'])
         delay_sec = int(request.form['delay_sec'])
         file_mask = request.form['file_mask']
+        video_codec = request.form['video_codec']
+        video_bitrate = request.form['video_bitrate']
+        output_ext = request.form['output_ext']
 
 
         print("FFmpeg folder:", ffmpeg_folder)
@@ -28,18 +31,37 @@ def index():
         print("ACCESS_TOKEN:", access_token)
 
         if dropbox_folder and access_token:
-            convertor = video.FFMPEGDropboxConverter(access_token,ffmpeg_folder,n_threads,delay_sec,
-                                                     {
-                                                         "dropbox_input":dropbox_folder,
-                                                         "input":output_folder,
-                                                         "output":output_folder
-                                                     },
-                                                     file_mask)
+            config = dropboxvideo.ConfigFFMPEGDropboxConverter(
+                dropbox_input=dropbox_folder,
+                dropbox_output="",
+                access_token=access_token,
+                ffmpeg_path=ffmpeg_folder,
+                num_threads=n_threads,
+                start_delay=delay_sec,
+                input_folder=input_folder,
+                output_folder=output_folder,
+                file_mask=file_mask,
+                video_codec=video_codec,
+                video_bitrate=video_bitrate,
+                output_ext=output_ext
+            )
+            convertor = dropboxvideo.FFMPEGDropboxConverter(config)
             convertor.convert()
         if input_folder and output_folder:
-            convertor = video.FFMPEGConverter(ffmpeg_folder, n_threads, delay_sec,
-                                              {"input":input_folder,"output":output_folder},
-                                              file_mask)
+
+            config=localvideo.ConfigFFMPEGConverter(
+                ffmpeg_path=ffmpeg_folder,
+                num_threads=n_threads,
+                start_delay=delay_sec,
+                input_folder=input_folder,
+                output_folder=output_folder,
+                file_mask=file_mask,
+                video_codec=video_codec,
+                video_bitrate=video_bitrate,
+                output_ext=output_ext
+            )
+
+            convertor = localvideo.FFMPEGConverter(config)
             convertor.convert()
 
     return render_template('convert/index.html', n_threads=N_MAX_THREADS)
