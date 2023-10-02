@@ -1,4 +1,3 @@
-import os
 from flask import Blueprint, render_template, request
 
 from .tools import dropboxvideo,localvideo

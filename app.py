@@ -1,11 +1,13 @@
 from flask import Flask, render_template
 from convert.convert import convert
+from downloader.downloader import downloader
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key_for_flask_messages'
 
-# Register the video conversion blueprint
+# Register the blueprints
 app.register_blueprint(convert, url_prefix='/convert')
+app.register_blueprint(downloader, url_prefix='/downloader')
 
 
 @app.route('/')
@@ -14,4 +16,4 @@ def homepage():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True)

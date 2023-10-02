@@ -1,0 +1,9 @@
+.inline-div {
+    display: inline-block; /* or use display: inline; */
+}
+
+.form-group label,
+.form-group input {
+    display: block;
+    margin-bottom: 8px;  /* Adjust as needed */
+}

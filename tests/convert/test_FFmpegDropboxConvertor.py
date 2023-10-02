@@ -1,10 +1,12 @@
 import unittest
 import os
 import shutil
-from convert.tools.video import FFMPEGDropboxConverter
+from convert.tools.dropboxvideo import FFMPEGDropboxConverter,ConfigFFMPEGDropboxConverter
+
+ACCESS_TOKEN=input("ACCESS_TOKEN :")
 
 class TestFFmpegDropboxConverter(unittest.TestCase):
-    ACCESS_TOKEN=input("ACCESS_TOKEN :")
+
     def setUp(self):
         # Setting up directories
         self.input_folder = "D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\video_test\\in"
@@ -19,16 +21,21 @@ class TestFFmpegDropboxConverter(unittest.TestCase):
         # shutil.copy2('test_video2.mp4', self.input_folder)
 
     def test_conversion_with_two_threads(self):
-        converter = FFMPEGDropboxConverter(
-                                    self.dropbox_input,
-                                    "",
-                                    self.ACCESS_TOKEN,
-                                    ffmpeg_path="D:\\docs\\dest\\1p1media\\soft\\videobase\\tests\\bin",
-                                    num_threads=2,
-                                    start_delay=1,
-                                    input_folder=self.output_folder,
-                                    output_folder=self.output_folder,
-                                    file_mask="*.ts")
+        config = ConfigFFMPEGDropboxConverter(
+            access_token=ACCESS_TOKEN,
+            input_dropbox="/andriyaka",
+            output_dropbox="",
+            ffmpeg_path="D:\\input_folder\\ffmpeg\\bin",
+            num_threads=2,
+            start_delay=1,
+            input_folder=self.input_folder,
+            output_folder=self.output_folder,
+            file_mask="*.ts",
+            video_codec="h264",
+            video_bitrate="1.5M",
+            output_ext="mp4"
+        )
+        converter = FFMPEGDropboxConverter(config)
         converter.convert()
 
         # Assuming you had 2 video files in the input directory

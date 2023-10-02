@@ -9,19 +9,18 @@ from .localvideo import ConfigFFmpeg, FFmpegThread, FileConverter
 
 CHUNK_SIZE = 1024 * 1024 * 10  # 10MB chunks
 
+
 @dataclass
 class ConfigDropboxFFmpeg(ConfigFFmpeg):
     dropbox_input: str
     dropbox_output: str
     access_token: str
 
-    def to_ConfigFFmpeg(self):
-        """Converts the ConfigDropboxFFmpeg object to ConfigFFmpeg."""
-        return ConfigFFmpeg(self.input, self.output, self.input_keys, self.output_keys)
 
 class FFMPEGDropboxThread(FFmpegThread):
     def __init__(self, config: ConfigDropboxFFmpeg, *args, **kwargs):
         super().__init__(config.to_ConfigFFmpeg(), *args, **kwargs)
+        self.config = config
         self.dbx = dropbox.Dropbox(config.access_token)
         self.dropbox_download()
 
@@ -42,7 +41,7 @@ class FFMPEGDropboxThread(FFmpegThread):
         # Save the video to a temporary file and update the progress bar
         temp_filename = self.config.input
         with open(temp_filename, 'wb') as temp_file:
-            for chunk in response.iter_content(chunk_size=self.CHUNK_SIZE):
+            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
                 progress.update(len(chunk))
                 temp_file.write(chunk)
 

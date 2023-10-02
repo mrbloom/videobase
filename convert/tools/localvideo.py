@@ -18,6 +18,18 @@ class ConfigFFmpeg:
     input_keys: dict
     output_keys: dict
 
+@dataclass
+class ConfigFFMPEGConverter:
+    ffmpeg_path: str
+    num_threads: int
+    start_delay: int
+    input_folder: str
+    output_folder: str
+    file_mask: str
+    video_codec: str
+    video_bitrate: str
+    output_ext: str
+
 class FFmpegThread(threading.Thread):
     active_ffmpeg_threads = 0
     def __init__(self, config: ConfigFFmpeg, *args, **kwargs):
@@ -79,10 +91,14 @@ class FileConverter:
         self.start_delay = start_delay
         self.output_ext = output_ext
         self.ffmpeg_path = ffmpeg_path
-        if not ffmpeg_path and not self.is_ffmpeg_installed():
+        self.check_ffmpeg_install()
+
+
+    def check_ffmpeg_install(self):
+        if not self.ffmpeg_path and not self.is_ffmpeg_installed():
             raise ValueError("FFmpeg not found in system path and no alternative path provided.")
-        if ffmpeg_path:
-            os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_path)
+        if self.ffmpeg_path:
+            os.environ["PATH"] += os.pathsep + os.path.dirname(self.ffmpeg_path)
 
     @staticmethod
     def is_ffmpeg_installed():
@@ -107,19 +123,6 @@ class FileConverter:
         output_path = self.change_file_extension(os.path.join(output_folder, rel_path),ext)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         return output_path
-
-
-@dataclass
-class ConfigFFMPEGConverter:
-    ffmpeg_path: str
-    num_threads: int
-    start_delay: int
-    input_folder: str
-    output_folder: str
-    file_mask: str
-    video_codec: str
-    video_bitrate: str
-    output_ext: str
 
 class FFMPEGConverter(FileConverter):
     def __init__(self, config):
