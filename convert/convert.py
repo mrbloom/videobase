@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 
-from .tools import dropboxvideo,localvideo
+from .tools import localvideo
 
 
 N_MAX_THREADS = 32
@@ -12,8 +12,6 @@ def index():
     if request.method == "POST":
         ffmpeg_folder = request.form['ffmpeg_folder']
         output_folder = request.form['output_folder']
-        dropbox_folder = request.form['dropbox_folder']
-        access_token = request.form['access_token']
         input_folder = request.form['input_folder']
         n_threads = int(request.form['n_threads'])
         delay_sec = int(request.form['delay_sec'])
@@ -26,26 +24,8 @@ def index():
         print("FFmpeg folder:", ffmpeg_folder)
         print("Input folder:", input_folder)
         print("Output folder:", output_folder)
-        print("Dropbox folder:",dropbox_folder)
-        print("ACCESS_TOKEN:", access_token)
 
-        if dropbox_folder and access_token:
-            config = dropboxvideo.ConfigFFMPEGDropboxConverter(
-                dropbox_input=dropbox_folder,
-                dropbox_output="",
-                access_token=access_token,
-                ffmpeg_path=ffmpeg_folder,
-                num_threads=n_threads,
-                start_delay=delay_sec,
-                input_folder=input_folder,
-                output_folder=output_folder,
-                file_mask=file_mask,
-                video_codec=video_codec,
-                video_bitrate=video_bitrate,
-                output_ext=output_ext
-            )
-            convertor = dropboxvideo.FFMPEGDropboxConverter(config)
-            convertor.convert()
+
         if input_folder and output_folder:
 
             config=localvideo.ConfigFFMPEGConverter(
