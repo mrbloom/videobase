@@ -7,3 +7,7 @@
     display: block;
     margin-bottom: 8px;  /* Adjust as needed */
 }
+
+.long-input {
+    width:300px;
+}

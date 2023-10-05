@@ -7,9 +7,11 @@ import ffmpeg
 import subprocess
 from dataclasses import dataclass
 from tqdm import tqdm
+import shlex
 
 # Constants
 BYTES_IN_GB = 1024 ** 3
+
 
 @dataclass
 class ConfigFFmpeg:
@@ -17,6 +19,22 @@ class ConfigFFmpeg:
     output: str
     input_keys: dict
     output_keys: dict
+
+    @staticmethod
+    def parse_ffmpeg_keys(keys_str):
+        tokens = shlex.split(keys_str)
+
+        if len(tokens) % 2 != 0:  # The number of tokens should be even (key-value pairs)
+            raise ValueError("The provided keys string seems to be invalid or incomplete.")
+
+        keys_dict = {}
+        for i in range(0, len(tokens), 2):  # Step by 2 for key-value pairs
+            key = tokens[i].lstrip('-')  # Remove the leading dash from the key
+            value = tokens[i + 1]
+            keys_dict[key] = value
+
+        return keys_dict
+
 
 @dataclass
 class ConfigFFMPEGConverter:
@@ -29,9 +47,12 @@ class ConfigFFMPEGConverter:
     video_codec: str
     video_bitrate: str
     output_ext: str
+    input_keys_str: str
+
 
 class FFmpegThread(threading.Thread):
     active_ffmpeg_threads = 0
+
     def __init__(self, config: ConfigFFmpeg, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config = config
@@ -48,8 +69,8 @@ class FFmpegThread(threading.Thread):
         # Get total duration of video
         probe = ffmpeg.probe(self.config.input)
         duration = float(probe['streams'][0]['duration'])
-
-        # Use ffmpeg-python to build the FFmpeg command
+        # .\ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i "%~1" -c:a copy -c:v h264_nvenc -y -b:v 1.5M   "%~2"
+        # Use ffmpeg-python to build the FFmpeg comm
         stream = (
             ffmpeg
             .input(self.config.input, **self.config.input_keys)
@@ -85,6 +106,7 @@ class FFmpegThread(threading.Thread):
         h, m, s = time_str.split(sep)
         return int(h) * 3600 + int(m) * 60 + float(s)
 
+
 class FileConverter:
     def __init__(self, ffmpeg_path, num_threads, start_delay, output_ext):
         self.num_threads = num_threads
@@ -92,7 +114,6 @@ class FileConverter:
         self.output_ext = output_ext
         self.ffmpeg_path = ffmpeg_path
         self.check_ffmpeg_install()
-
 
     def check_ffmpeg_install(self):
         if not self.ffmpeg_path and not self.is_ffmpeg_installed():
@@ -116,27 +137,27 @@ class FileConverter:
     def convert(self):
         raise NotImplementedError("Subclasses must implement this method.")
 
-
-    def make_output_path(self,file_path,start_folder,output_folder):
+    def make_output_path(self, file_path, start_folder, output_folder):
         rel_path = os.path.relpath(file_path, start_folder)
         ext = self.config.file_mask.split('.')[-1]
-        output_path = self.change_file_extension(os.path.join(output_folder, rel_path),ext)
+        output_path = self.change_file_extension(os.path.join(output_folder, rel_path), ext)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         return output_path
+
 
 class FFMPEGConverter(FileConverter):
     def __init__(self, config):
         super().__init__(config.ffmpeg_path, config.num_threads, config.start_delay, config.output_ext)
         self.config = config
 
-
     def convert(self):
-        files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.file_mask), recursive=True)
+        files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.file_mask),
+                                     recursive=True)
         threads = []
-
+        input_keys = ConfigFFmpeg.parse_ffmpeg_keys(self.config.input_keys_str)
         for file_path in files_to_convert:
             output_path = self.make_output_path(file_path, self.config.input_folder, self.config.output_folder)
-            config = ConfigFFmpeg(file_path, output_path, {},
+            config = ConfigFFmpeg(file_path, output_path, input_keys,
                                   {
                                       'vcodec': self.config.video_codec,
                                       'video_bitrate': self.config.video_bitrate

@@ -19,6 +19,7 @@ def index():
         video_codec = request.form['video_codec']
         video_bitrate = request.form['video_bitrate']
         output_ext = request.form['output_ext']
+        input_keys_str = request.form['input_keys_str']
 
 
         print("FFmpeg folder:", ffmpeg_folder)
@@ -37,7 +38,8 @@ def index():
                 file_mask=file_mask,
                 video_codec=video_codec,
                 video_bitrate=video_bitrate,
-                output_ext=output_ext
+                output_ext=output_ext,
+                input_keys_str=input_keys_str
             )
 
             convertor = localvideo.FFMPEGConverter(config)
