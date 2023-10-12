@@ -12,26 +12,36 @@
     </form>
     <hr>
 
-    <h2>Video Files:</h2>
-    <button onclick="toggleList('expand')">+</button>
-    <button onclick="toggleList('collapse')">-</button>
+   <h2>Video Files:</h2>
+
     <div id="videoList">
         <ul>
-            {% for video in videos %}
+            {% for name, content in videos.items() recursive %}
             <li>
-                <a href="{{ url_for('explorer.play_video', video_path=video) }}">{{ video }}</a>
+                {% if content is mapping %}
+                <button onclick="toggleFolder(this)">+</button>
+                {{ name }}
+                <ul class="folder-content" style="display: none;">
+                    {{ loop(content|dictsort) }}
+                </ul>
+                {% else %}
+                <a href="{{ url_for('explorer.play_video', video_path=name) }}">{{ name }}</a>
+                {% endif %}
             </li>
             {% endfor %}
         </ul>
     </div>
 
     <script>
-        function toggleList(action) {
-            var videoList = document.getElementById('videoList');
-            if (action === 'expand') {
-                videoList.style.display = 'block';
-            } else if (action === 'collapse') {
-                videoList.style.display = 'none';
+        function toggleFolder(buttonElem) {
+            const folderContent = buttonElem.parentElement.querySelector('.folder-content');
+
+            if (folderContent.style.display === 'none' || !folderContent.style.display) {
+                folderContent.style.display = 'block';
+                buttonElem.textContent = '-';
+            } else {
+                folderContent.style.display = 'none';
+                buttonElem.textContent = '+';
             }
         }
     </script>

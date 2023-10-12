@@ -1,4 +1,4 @@
-# Check if a parameter is provided. If not, default to the current folder.
+.# Check if a parameter is provided. If not, default to the current folder.
 if ($args.Count -eq 0) {
     $folderPath = Get-Location
 } else {
