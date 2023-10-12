@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video files explorer</title>
+</head>
+<body>
+    <form method="post">
+        <label for="root_folder">Set Root Folder:</label>
+        <input type="text" id="root_folder" name="root_folder" placeholder="/path/to/video/files">
+        <input type="submit" value="Set Folder">
+    </form>
+    <hr>
+
+    <h2>Video Files:</h2>
+    <button onclick="toggleList('expand')">+</button>
+    <button onclick="toggleList('collapse')">-</button>
+    <div id="videoList">
+        <ul>
+            {% for video in videos %}
+            <li>
+                <a href="{{ url_for('explorer.play_video', video_path=video) }}">{{ video }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        function toggleList(action) {
+            var videoList = document.getElementById('videoList');
+            if (action === 'expand') {
+                videoList.style.display = 'block';
+            } else if (action === 'collapse') {
+                videoList.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>
