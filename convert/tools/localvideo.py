@@ -76,9 +76,7 @@ class FFmpegThread(threading.Thread):
             print(f"File {self.config.output} exists and overwrite option is {self.config.overwrite_files}")
             FFmpegThread.active_ffmpeg_threads -= 1
             return
-        # Get total duration of video to compare for future
-        probe = ffmpeg.probe(self.config.input)
-        duration = float(probe['streams'][0]['duration'])
+
         # .\ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i "%~1" -c:a copy -c:v h264_nvenc -y -b:v 1.5M   "%~2"
         # Use ffmpeg-python to build the FFmpeg comm
         stream = (
@@ -89,14 +87,19 @@ class FFmpegThread(threading.Thread):
         if self.config.overwrite_files:
             stream = stream.overwrite_output()
         stream = stream.compile()
-
-
         # Run the command using subprocess
         process = subprocess.Popen(stream, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-        # Initialize tqdm progress bar
-        self.progress_bar = tqdm(total=duration, desc=f"Converting {self.source_filename}=>{self.encoded_filename}",
-                                 bar_format="{desc}: {percentage:.1f}% |{bar}| {elapsed} < {remaining}")
-        self.show_progress(process)
+
+        try:
+            # Get total duration of video to compare for future
+            probe = ffmpeg.probe(self.config.input)
+            duration = float(probe['streams'][0]['duration'])
+            # Initialize tqdm progress bar
+            self.progress_bar = tqdm(total=duration, desc=f"Converting {self.source_filename}=>{self.encoded_filename}",
+                                     bar_format="{desc}: {percentage:.1f}% |{bar}| {elapsed} < {remaining}")
+            self.show_progress(process)
+        except:
+            print(f"Error with duration of {self.config.input}")
 
         FFmpegThread.active_ffmpeg_threads -= 1
 
