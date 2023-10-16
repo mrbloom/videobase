@@ -71,7 +71,10 @@ class FFmpegThread(threading.Thread):
         if not self.enough_disk_space(self.config.output, self.required_space_gb):
             print(f"Not enough space on disk at {self.config.output}. Required: {self.required_space_gb}GB.")
             return
-        # Get total duration of video
+        if os.path.exists(self.config.output) and os.path.isfile(self.config.output) and not self.config.overwrite_files:
+            print(f"File {self.config.output} exists and overwrite option is {self.config.overwrite_files}")
+            return
+        # Get total duration of video to compare for future
         probe = ffmpeg.probe(self.config.input)
         duration = float(probe['streams'][0]['duration'])
         # .\ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i "%~1" -c:a copy -c:v h264_nvenc -y -b:v 1.5M   "%~2"
