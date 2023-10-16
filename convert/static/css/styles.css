@@ -1,13 +1,15 @@
 .inline-div {
-    display: inline-block; /* or use display: inline; */
+    display: flex;
+    align-items: center; /* if you want the items to be vertically centered */
+    gap: 10px; /* gap between the label and the input field */
+    margin-bottom: 10px; /* if you want some space between each .form-group */
 }
 
-.form-group label,
-.form-group input {
-    display: block;
-    margin-bottom: 8px;  /* Adjust as needed */
+.inline-div label {
+    flex-shrink: 0; /* prevents the label from shrinking */
+    width: 150px; /* set a fixed width or adjust as needed */
 }
 
-.long-input {
-    width:300px;
+.form-control {
+    flex-grow: 1; /* allows the input field to take up the remaining space */
 }

@@ -20,6 +20,7 @@ class ConfigFFmpeg:
     output: str
     input_keys: dict
     output_keys: dict
+    overwrite_files: bool
 
     @staticmethod
     def parse_ffmpeg_keys(keys_str):
@@ -49,6 +50,9 @@ class ConfigFFMPEGConverter:
     video_codec: str
     video_bitrate: str
     input_keys_str: str
+    output_keys_str: str
+    overwrite_files: bool
+
 
 
 class FFmpegThread(threading.Thread):
@@ -76,9 +80,11 @@ class FFmpegThread(threading.Thread):
             ffmpeg
             .input(self.config.input, **self.config.input_keys)
             .output(self.config.output, **self.config.output_keys)
-            .overwrite_output()
-            .compile()
         )
+        if self.config.overwrite_files:
+            stream = stream.overwrite_output()
+        stream = stream.compile()
+
 
         # Run the command using subprocess
         process = subprocess.Popen(stream, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
@@ -155,6 +161,7 @@ class FFMPEGConverter(FileConverter):
     def __init__(self, config):
         super().__init__(config.ffmpeg_path, config.num_threads, config.start_delay, config.output_file_mask)
         self.config = config
+        self.overwrite_files = config.overwrite_files
 
     def convert(self):
         files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
@@ -166,8 +173,9 @@ class FFMPEGConverter(FileConverter):
             config = ConfigFFmpeg(file_path, output_path, input_keys,
                                   {
                                       'vcodec': self.config.video_codec,
-                                      'video_bitrate': self.config.video_bitrate
-                                  })
+                                      'video_bitrate': self.config.video_bitrate,
+                                  },
+                                  overwrite_files=self.config.overwrite_files)
             thread = FFmpegThread(config)
             threads.append(thread)
             thread.start()

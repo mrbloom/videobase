@@ -8,83 +8,83 @@
     </head>
     <body>
         <h2>Video Converter</h2>
+
         <form action="{{ url_for('.index') }}" method="post">
-            <p>
-                <div class="inline-div form-group">
-                    <label for="ffmpeg_folder">Select FFMPEG bin:</label>
-                    <input type="text" id="ffmpeg_folder" name="ffmpeg_folder">
-                </div>
-                <div class="inline-div form-group">
-                    <label for="n_threads">Select number of FFMPEGs:</label>
-                    <select id="n_threads" name="n_threads"></select>
-                </div>
-                <div class="inline-div form-group">
-                    <label for="delay_sec">Select deley between FFMPEGs in seconds:</label>
-                    <input type="number" id="delay_sec" name="delay_sec" value="0"></input>
-                </div>
-            </p>
-            <p>
+            <fieldset>
+                <legend>Multi threads parameters</legend>
                 <div class="form-group inline-div">
-                    <label for="input_keys_str">Place input keys:</label>
-                    <input class="long-input" type="text" id="input_keys_str" name="input_keys_str" placeholder="-hwaccel cuda -hwaccel_output_format cuda">
+                    <label for="ffmpeg_folder">{{ form.ffmpeg_folder.label }}</label>
+                    {{ form.ffmpeg_folder(id="ffmpeg_folder", class="form-control") }}
                 </div>
+
                 <div class="form-group inline-div">
-                    <label for="input_folder">Input file mask:</label>
-                    <input type="text" id="input_folder" name="input_folder" placeholder="C:\input_videos\">
+                    <label for="n_threads">{{ form.n_threads.label }}</label>
+                    {{ form.n_threads(id="n_threads", class="form-control") }}
                 </div>
+
                 <div class="form-group inline-div">
-                    <label for="input_file_mask">Input file mask:</label>
-                    <input type="text" id="input_file_mask" name="input_file_mask" placeholder="*\02*.ts">
+                    <label for="delay_sec">{{ form.delay_sec.label }}</label>
+                    {{ form.delay_sec(id="delay_sec", class="form-control") }}
                 </div>
-            </p>
-            <p>
-                <div class="inline-div form-group">
-                    <label for="video_codec">Video Codec:</label>
-                    <input type="text" id="video_codec" name="video_codec" placeholder="h264" value="h264">
+            </fieldset>
+
+            <fieldset>
+                <legend>Input parameters:</legend>
+                <div class="form-group">
+                    <label for="input_keys_str">{{ form.input_keys_str.label }}</label>
+                    {{ form.input_keys_str(id="input_keys_str", class="form-control") }}
                 </div>
-                <div class="inline-div form-group">
-                    <label for="video_bitrate">Video Bitrate:</label>
-                    <input type="text" id="video_bitrate" name="video_bitrate" placeholder="1.5M" value="1.5M">
+
+                <div class="form-group">
+                    <label for="input_folder">{{ form.input_folder.label }}</label>
+                    {{ form.input_folder(id="input_folder", class="form-control") }}
                 </div>
-                <div class="form-group inline-div">
-                    <label for="output_folder">Output file mask:</label>
-                    <input class="long-input" type="text" id="output_folder" name="output_folder" placeholder="C:\output_videos\">
+
+                <div class="form-group">
+                    <label for="input_file_mask">{{ form.input_file_mask.label }}</label>
+                    {{ form.input_file_mask(id="input_file_mask", class="form-control") }}
                 </div>
-                <div class="form-group inline-div">
-                    <label for="output_file_mask">Output file mask:</label>
-                    <input class="long-input" type="text" id="output_file_mask" name="output_file_mask" placeholder="2Russia24\2Russia24*.mp4">
+            </fieldset>
+
+            <fieldset>
+                <legend>Output parameters:</legend>
+                <div class="form-group">
+                    <label for="output_keys_str">{{ form.output_keys_str.label }}</label>
+                    {{ form.output_keys_str(id="output_keys_str", class="form-control") }}
                 </div>
-            </p>
-            <p>
-                <input type="submit" value="Start Conversion">
-            </p>
+
+                <div class="form-group">
+                    <label for="video_codec">{{ form.video_codec.label }}</label>
+                    {{ form.video_codec(id="video_codec", class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="video_bitrate">{{ form.video_bitrate.label }}</label>
+                    {{ form.video_bitrate(id="video_bitrate", class="form-control") }}
+                </div>
+
+
+                <div class="form-group">
+                    <label for="output_folder">{{ form.output_folder.label }}</label>
+                    {{ form.output_folder(id="output_folder", class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="output_file_mask">{{ form.output_file_mask.label }}</label>
+                    {{ form.output_file_mask(id="output_file_mask", class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    <label for="overwrite_files">{{ form.overwrite_files.label }}</label>
+                    {{ form.overwrite_files(id="overwrite_files", class="form-control") }}
+                </div>
+            </fieldset>
+
+
+             <div class="form-group">
+                {{ form.submit() }}
+             </div>
+
         </form>
-
-        <div id="logs">
-            <!-- Progress logs can be displayed here if needed -->
-        </div>
-
-        <p><a href="/">Back to Main Page</a></p>
     </body>
-    <script>
-        const n_threads = {{ n_threads }};
-        const dropdown = document.getElementById('n_threads');
-
-        const inputFolderElem = document.getElementById('input_folder');
-        const outputFolderElem = document.getElementById('output_folder');
-
-
-        for (let i = 1; i <= n_threads; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.innerText = i;
-            dropdown.appendChild(option);
-        }
-
-        inputFolderElem.addEventListener('input',function(event){
-            outputFolderElem.value = inputFolderElem.value
-        })
-
-
-    </script>
 </html>
