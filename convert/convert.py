@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, flash
 from wtforms import Form, StringField, IntegerField, SelectField, BooleanField, validators, SubmitField
 from .tools import localvideo
 
-
 N_MAX_THREADS = 32
 
 convert = Blueprint('convert', __name__, template_folder='templates', static_folder='static')
@@ -11,9 +10,10 @@ convert = Blueprint('convert', __name__, template_folder='templates', static_fol
 class VideoConversionForm(Form):
     ffmpeg_folder = StringField('Select FFMPEG bin', default="")
     n_threads = SelectField('Select number of FFMPEGs', choices=[(i, i) for i in range(1, N_MAX_THREADS)])
-    delay_sec = IntegerField('Select deley between FFMPEGs in seconds', default=1, validators=[validators.NumberRange(min=0)])
-    input_keys_str = StringField('Place input keys',default="")
-    output_keys_str = StringField('Place output keys',default="")
+    delay_sec = IntegerField('Select deley between FFMPEGs in seconds', default=1,
+                             validators=[validators.NumberRange(min=0)])
+    input_keys_str = StringField('Place input keys', default="")
+    output_keys_str = StringField('Place output keys', default="")
     input_folder = StringField('Input folder', [validators.InputRequired()])
     input_file_mask = StringField('Input file mask', [validators.InputRequired()])
     video_codec = StringField('Video Codec', default="h264")
@@ -42,15 +42,12 @@ def index():
         output_keys_str = form.output_keys_str.data
         overwrite_files = form.overwrite_files.data
 
-
         print("FFmpeg folder:", ffmpeg_folder)
         print("Input folder:", input_folder)
         print("Output folder:", output_folder)
 
-
         if input_folder and output_folder:
-
-            config=localvideo.ConfigFFMPEGConverter(
+            config = localvideo.ConfigFFMPEGConverter(
                 ffmpeg_path=ffmpeg_folder,
                 num_threads=n_threads,
                 start_delay=delay_sec,
@@ -62,7 +59,7 @@ def index():
                 output_file_mask=output_file_mask,
                 input_keys_str=input_keys_str,
                 output_keys_str=output_keys_str,
-                overwrite_files = overwrite_files
+                overwrite_files=overwrite_files
             )
             convertor = localvideo.FFMPEGConverter(config)
             convertor.convert()

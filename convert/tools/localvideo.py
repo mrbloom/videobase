@@ -69,10 +69,12 @@ class FFmpegThread(threading.Thread):
     def run(self):
         FFmpegThread.active_ffmpeg_threads += 1
         if not self.enough_disk_space(self.config.output, self.required_space_gb):
+            FFmpegThread.active_ffmpeg_threads -= 1
             print(f"Not enough space on disk at {self.config.output}. Required: {self.required_space_gb}GB.")
             return
         if os.path.exists(self.config.output) and os.path.isfile(self.config.output) and not self.config.overwrite_files:
             print(f"File {self.config.output} exists and overwrite option is {self.config.overwrite_files}")
+            FFmpegThread.active_ffmpeg_threads -= 1
             return
         # Get total duration of video to compare for future
         probe = ffmpeg.probe(self.config.input)
