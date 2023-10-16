@@ -8,6 +8,7 @@ import subprocess
 from dataclasses import dataclass
 from tqdm import tqdm
 import shlex
+from pathlib import Path
 
 # Constants
 BYTES_IN_GB = 1024 ** 3
@@ -43,10 +44,10 @@ class ConfigFFMPEGConverter:
     start_delay: int
     input_folder: str
     output_folder: str
-    file_mask: str
+    input_file_mask: str
+    output_file_mask: str
     video_codec: str
     video_bitrate: str
-    output_ext: str
     input_keys_str: str
 
 
@@ -108,10 +109,10 @@ class FFmpegThread(threading.Thread):
 
 
 class FileConverter:
-    def __init__(self, ffmpeg_path, num_threads, start_delay, output_ext):
+    def __init__(self, ffmpeg_path, num_threads, start_delay, output_file_mask):
         self.num_threads = num_threads
         self.start_delay = start_delay
-        self.output_ext = output_ext
+        self.output_file_mask = output_file_mask
         self.ffmpeg_path = ffmpeg_path
         self.check_ffmpeg_install()
 
@@ -138,20 +139,25 @@ class FileConverter:
         raise NotImplementedError("Subclasses must implement this method.")
 
     def make_output_path(self, file_path, start_folder, output_folder):
+        filename = Path(file_path).stem
         rel_path = os.path.relpath(file_path, start_folder)
-        ext = self.config.file_mask.split('.')[-1]
-        output_path = self.change_file_extension(os.path.join(output_folder, rel_path), ext)
+        rel_path = str(Path(rel_path).parent)
+        if rel_path == ".":
+            rel_path = ""
+        ext = self.config.output_file_mask.split('.')[-1]
+        out_rel_path=self.output_file_mask.replace("*","{}").format(filename)
+        output_path = self.change_file_extension(os.path.join(output_folder, rel_path,out_rel_path), ext)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         return output_path
 
 
 class FFMPEGConverter(FileConverter):
     def __init__(self, config):
-        super().__init__(config.ffmpeg_path, config.num_threads, config.start_delay, config.output_ext)
+        super().__init__(config.ffmpeg_path, config.num_threads, config.start_delay, config.output_file_mask)
         self.config = config
 
     def convert(self):
-        files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.file_mask),
+        files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
                                      recursive=True)
         threads = []
         input_keys = ConfigFFmpeg.parse_ffmpeg_keys(self.config.input_keys_str)

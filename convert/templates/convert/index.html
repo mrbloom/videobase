@@ -5,14 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Video Converter</title>
         <link rel="stylesheet" href="{{ url_for('convert.static', filename='css/styles.css') }}">
-
-
     </head>
     <body>
-
         <h2>Video Converter</h2>
         <form action="{{ url_for('.index') }}" method="post">
-
             <p>
                 <div class="inline-div form-group">
                     <label for="ffmpeg_folder">Select FFMPEG bin:</label>
@@ -28,26 +24,20 @@
                 </div>
             </p>
             <p>
-                <div class="form-group">
-                    <label for="file_mask">File mask for select files for conversion:</label>
-                    <input type="text" id="file_mask" name="file_mask" placeholder="*.ts" value="*.ts">
-                </div>
-            </p>
-            <p>
                 <div class="form-group inline-div">
                     <label for="input_keys_str">Place input keys:</label>
                     <input class="long-input" type="text" id="input_keys_str" name="input_keys_str" placeholder="-hwaccel cuda -hwaccel_output_format cuda">
                 </div>
                 <div class="form-group inline-div">
-                    <label for="input_folder">Select local INPUT folder:</label>
-                    <input type="text" id="input_folder" name="input_folder">
+                    <label for="input_folder">Input file mask:</label>
+                    <input type="text" id="input_folder" name="input_folder" placeholder="C:\input_videos\">
+                </div>
+                <div class="form-group inline-div">
+                    <label for="input_file_mask">Input file mask:</label>
+                    <input type="text" id="input_file_mask" name="input_file_mask" placeholder="*\02*.ts">
                 </div>
             </p>
             <p>
-                <div class="inline-div form-group">
-                    <label for="output_folder">Select local OUTPUT folder:</label>
-                    <input type="text" id="output_folder" name="output_folder">
-                </div>
                 <div class="inline-div form-group">
                     <label for="video_codec">Video Codec:</label>
                     <input type="text" id="video_codec" name="video_codec" placeholder="h264" value="h264">
@@ -56,9 +46,13 @@
                     <label for="video_bitrate">Video Bitrate:</label>
                     <input type="text" id="video_bitrate" name="video_bitrate" placeholder="1.5M" value="1.5M">
                 </div>
-                <div class="inline-div form-group">
-                    <label for="output_ext">Extension of output file:</label>
-                    <input type="text" id="output_ext" name="output_ext" placeholder="mp4" value="mp4">
+                <div class="form-group inline-div">
+                    <label for="output_folder">Output file mask:</label>
+                    <input class="long-input" type="text" id="output_folder" name="output_folder" placeholder="C:\output_videos\">
+                </div>
+                <div class="form-group inline-div">
+                    <label for="output_file_mask">Output file mask:</label>
+                    <input class="long-input" type="text" id="output_file_mask" name="output_file_mask" placeholder="2Russia24\2Russia24*.mp4">
                 </div>
             </p>
             <p>

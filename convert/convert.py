@@ -15,10 +15,10 @@ def index():
         input_folder = request.form['input_folder']
         n_threads = int(request.form['n_threads'])
         delay_sec = int(request.form['delay_sec'])
-        file_mask = request.form['file_mask']
+        input_file_mask = request.form['input_file_mask']
         video_codec = request.form['video_codec']
         video_bitrate = request.form['video_bitrate']
-        output_ext = request.form['output_ext']
+        output_file_mask = request.form['output_file_mask']
         input_keys_str = request.form['input_keys_str']
 
 
@@ -35,10 +35,10 @@ def index():
                 start_delay=delay_sec,
                 input_folder=input_folder,
                 output_folder=output_folder,
-                file_mask=file_mask,
+                input_file_mask=input_file_mask,
                 video_codec=video_codec,
                 video_bitrate=video_bitrate,
-                output_ext=output_ext,
+                output_file_mask=output_file_mask,
                 input_keys_str=input_keys_str
             )
 
