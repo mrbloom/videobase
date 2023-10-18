@@ -1,7 +1,5 @@
 <h2>Video Player</h2>
 <video width="320" height="240" controls>
-    <source src="{{ url_for('explorer.static', filename='videos/' + video_path) }}" type="video/mp4">
+    <source src="{{ url_for('explorer.serve_video', video_path=video_path) }}" type="video/mp4">
     Your browser does not support the video tag.
 </video>
-
-<p><a href="{{ url_for('explorer.index') }}">Back to List</a></p>

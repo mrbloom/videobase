@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, send_from_directory, current_app, request, redirect, url_for
+from flask import Blueprint, render_template, send_file, current_app, request, redirect, url_for
 import os
 
 explorer = Blueprint('explorer', __name__, template_folder='templates', static_folder='static')
@@ -43,4 +43,12 @@ def play_video(video_path):
     print("Trying to access video at:", video_path_full)
     if os.path.exists(video_path_full):
         return render_template('explorer/play.html', video_path=video_path)
+    return "Video not found", 404
+
+@explorer.route('/serve/<path:video_path>')
+def serve_video(video_path):
+    videos_folder = current_app.config.get('VIDEOS_FOLDER', os.path.join(current_app.root_path, 'static', 'videos'))
+    video_path_full = os.path.join(videos_folder, video_path)
+    if os.path.exists(video_path_full):
+        return send_file(video_path_full, conditional=True)
     return "Video not found", 404
