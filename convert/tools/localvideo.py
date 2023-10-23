@@ -65,17 +65,24 @@ class FFmpegThread(threading.Thread):
         self.encoded_filename = os.path.basename(config.output)
         self.progress_bar = None
         self.required_space_gb = 1.0
+        self.process = None
 
-    def run(self):
-        FFmpegThread.active_ffmpeg_threads += 1
+    def is_ok(self):
         if not self.enough_disk_space(self.config.output, self.required_space_gb):
             FFmpegThread.active_ffmpeg_threads -= 1
             print(f"Not enough space on disk at {self.config.output}. Required: {self.required_space_gb}GB.")
-            return
+            return False
         if os.path.exists(self.config.output) and os.path.isfile(self.config.output) and not self.config.overwrite_files:
             print(f"File {self.config.output} exists and overwrite option is {self.config.overwrite_files}")
             FFmpegThread.active_ffmpeg_threads -= 1
+            return False
+        return True
+
+    def run(self):
+        if not self.is_ok():
             return
+
+        FFmpegThread.active_ffmpeg_threads += 1
 
         # .\ffmpeg -hwaccel cuda -hwaccel_output_format cuda -i "%~1" -c:a copy -c:v h264_nvenc -y -b:v 1.5M   "%~2"
         # Use ffmpeg-python to build the FFmpeg comm
@@ -88,7 +95,7 @@ class FFmpegThread(threading.Thread):
             stream = stream.overwrite_output()
         stream = stream.compile()
         # Run the command using subprocess
-        process = subprocess.Popen(stream, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        self.process = subprocess.Popen(stream, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
         try:
             # Get total duration of video to compare for future
@@ -97,7 +104,7 @@ class FFmpegThread(threading.Thread):
             # Initialize tqdm progress bar
             self.progress_bar = tqdm(total=duration, desc=f"Converting {self.source_filename}=>{self.encoded_filename}",
                                      bar_format="{desc}: {percentage:.1f}% |{bar}| {elapsed} < {remaining}")
-            self.show_progress(process)
+            self.show_progress(self.process)
         except:
             print(f"Error with duration of {self.config.input}")
 
@@ -120,6 +127,10 @@ class FFmpegThread(threading.Thread):
     def time_to_seconds(self, time_str, sep=':'):
         h, m, s = time_str.split(sep)
         return int(h) * 3600 + int(m) * 60 + float(s)
+
+    def stop(self):
+        self.process.terminate()  # This will forcefully terminate the subprocess on Windows
+        self.process.wait()  # Optionally, wait for the subprocess to terminate
 
 
 class FileConverter:

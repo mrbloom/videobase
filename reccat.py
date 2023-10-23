@@ -25,6 +25,6 @@ if __name__ == "__main__":
     # print("Tree structure of the current folder:")
     # os.system(f"tree {folder_path}")
 
-    extensions = ['.py', '.js', '.html', '.css']
+    extensions = ['.py', '.js', '.html'] #, '.css']
     exclude_folders = ['venv', '.git', '.idea', 'tests']
     print_file_contents(folder_path, extensions, exclude_folders)

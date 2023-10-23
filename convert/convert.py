@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, current_app
+# from flask_socketio import emit
+# from . import socketio  # Import the socketio instance
 from wtforms import Form, StringField, IntegerField, SelectField, BooleanField, validators, SubmitField
 from .tools import localvideo
 
