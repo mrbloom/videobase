@@ -181,7 +181,7 @@ class FFMPEGConverter(FileConverter):
         threads = []
         input_keys = ConfigFFmpeg.parse_ffmpeg_keys(self.config.input_keys_str)
         list_of_files = files_to_convert if self.config.overwrite_files else self.get_unconverted_files(files_to_convert)
-        for file_path in list_of_files:
+        for i,file_path in enumerate(list_of_files):
             output_path = self.make_output_path(file_path, self.config.input_folder, self.config.output_folder)
             config = ConfigFFmpeg(file_path, output_path, input_keys,
                                   {
@@ -196,3 +196,5 @@ class FFMPEGConverter(FileConverter):
 
             while FFmpegThread.active_ffmpeg_threads >= self.num_threads:
                 time.sleep(1)
+
+            print(f"Converted {i} files from {len(list_of_files)}")

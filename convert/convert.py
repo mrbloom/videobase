@@ -64,8 +64,14 @@ def index():
             convertor = localvideo.FFMPEGConverter(config)
             files_to_convert = convertor.get_files()
             unconverted_files = convertor.get_unconverted_files(files_to_convert)
-            percent_unready = int(len(unconverted_files)/len(files_to_convert))
-            print(f"We have {100-percent_unready}% converted files.\n The number of unconverted is {len(unconverted_files)}")
+            percent_unready = round(len(unconverted_files)/len(files_to_convert), 2)
+            print(f"We have {100-percent_unready}% converted files.")
+            print(f"The number of unconverted is {len(unconverted_files)}")
+            print(f"The number of all files is {len(files_to_convert)}")
+            if len(unconverted_files)>10:
+                print(unconverted_files[:5]," ... ",unconverted_files[-5:])
+            else:
+                print(unconverted_files)
             convertor.convert(files_to_convert)
         elif request.method == "POST" and not form.validate():
             flash('Please correct the errors in the form')
