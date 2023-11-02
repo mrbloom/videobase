@@ -52,6 +52,7 @@ class ConfigFFMPEGConverter:
     input_keys_str: str
     output_keys_str: str
     overwrite_files: bool
+    overwrite_if_duration:bool
 
 
 
