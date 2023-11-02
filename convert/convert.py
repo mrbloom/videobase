@@ -63,7 +63,7 @@ def index():
             )
             convertor = localvideo.FFMPEGConverter(config)
             files_to_convert = convertor.get_files()
-            unconverted_files = convertor.get_unconverted_files()
+            unconverted_files = convertor.get_unconverted_files(files_to_convert)
             percent_unready = int(len(unconverted_files)/len(files_to_convert))
             print(f"We have {100-percent_unready}% converted files.\n The number of unconverted is {len(unconverted_files)}")
             convertor.convert(files_to_convert)

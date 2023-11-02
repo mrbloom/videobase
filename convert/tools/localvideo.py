@@ -174,13 +174,14 @@ class FFMPEGConverter(FileConverter):
     def get_files(self):
         return glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
                                      recursive=True)
-    def get_unconverted_files(self):
-        return [file for file in self.get_files() if not os.path.exists(self.make_output_path(file, self.config.input_folder, self.config.output_folder))]
+    def get_unconverted_files(self, list_of_files):
+        return [file for file in list_of_files if not os.path.exists(self.make_output_path(file, self.config.input_folder, self.config.output_folder))]
 
     def convert(self, files_to_convert):
         threads = []
         input_keys = ConfigFFmpeg.parse_ffmpeg_keys(self.config.input_keys_str)
-        for file_path in files_to_convert:
+        list_of_files = files_to_convert if self.config.overwrite_files else self.get_unconverted_files(files_to_convert)
+        for file_path in list_of_files:
             output_path = self.make_output_path(file_path, self.config.input_folder, self.config.output_folder)
             config = ConfigFFmpeg(file_path, output_path, input_keys,
                                   {
