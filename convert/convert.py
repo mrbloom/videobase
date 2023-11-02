@@ -62,7 +62,11 @@ def index():
                 overwrite_files=overwrite_files
             )
             convertor = localvideo.FFMPEGConverter(config)
-            convertor.convert()
+            files_to_convert = convertor.get_files()
+            unconverted_files = convertor.get_unconverted_files()
+            percent_unready = int(len(unconverted_files)/len(files_to_convert))
+            print(f"We have {100-percent_unready}% converted files.\n The number of unconverted is {len(unconverted_files)}")
+            convertor.convert(files_to_convert)
         elif request.method == "POST" and not form.validate():
             flash('Please correct the errors in the form')
 

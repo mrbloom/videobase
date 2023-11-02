@@ -171,9 +171,13 @@ class FFMPEGConverter(FileConverter):
         self.config = config
         self.overwrite_files = config.overwrite_files
 
-    def convert(self):
-        files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
+    def get_files(self):
+        return glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
                                      recursive=True)
+    def get_unconverted_files(self):
+        return [file for file in self.get_files() if not os.path.exists(self.make_output_path(file, self.config.input_folder, self.config.output_folder))]
+
+    def convert(self, files_to_convert):
         threads = []
         input_keys = ConfigFFmpeg.parse_ffmpeg_keys(self.config.input_keys_str)
         for file_path in files_to_convert:
