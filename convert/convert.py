@@ -69,6 +69,7 @@ def index():
             files_to_convert = convertor.get_files()
             unconverted_files = convertor.get_unconverted_files(files_to_convert)
             percent_unready = round(len(unconverted_files)/len(files_to_convert), 2)
+            # print(f"Files to convert {files_to_convert}")
             print(f"We have {100-percent_unready}% converted files.")
             print(f"The number of unconverted is {len(unconverted_files)}")
             print(f"The number of all files is {len(files_to_convert)}")
