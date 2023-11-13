@@ -52,6 +52,7 @@ class ConfigFFMPEGConverter:
     input_keys_str: str
     output_keys_str: str
     overwrite_files: bool
+    overwrite_if_duration:bool
 
 
 
@@ -182,12 +183,17 @@ class FFMPEGConverter(FileConverter):
         self.config = config
         self.overwrite_files = config.overwrite_files
 
-    def convert(self):
-        files_to_convert = glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
+    def get_files(self):
+        return glob.glob(os.path.join(self.config.input_folder, '**', self.config.input_file_mask),
                                      recursive=True)
+    def get_unconverted_files(self, list_of_files):
+        return [file for file in list_of_files if not os.path.exists(self.make_output_path(file, self.config.input_folder, self.config.output_folder))]
+
+    def convert(self, files_to_convert):
         threads = []
         input_keys = ConfigFFmpeg.parse_ffmpeg_keys(self.config.input_keys_str)
-        for file_path in files_to_convert:
+        list_of_files = files_to_convert if self.config.overwrite_files else self.get_unconverted_files(files_to_convert)
+        for i,file_path in enumerate(list_of_files):
             output_path = self.make_output_path(file_path, self.config.input_folder, self.config.output_folder)
             config = ConfigFFmpeg(file_path, output_path, input_keys,
                                   {
@@ -202,3 +208,5 @@ class FFMPEGConverter(FileConverter):
 
             while FFmpegThread.active_ffmpeg_threads >= self.num_threads:
                 time.sleep(1)
+
+            print(f"Converted {i} files from {len(list_of_files)}")

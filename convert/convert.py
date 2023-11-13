@@ -23,6 +23,7 @@ class VideoConversionForm(Form):
     output_folder = StringField('Output folder', [validators.InputRequired()])
     output_file_mask = StringField('Output file mask', [validators.InputRequired()])
     overwrite_files = BooleanField('Overwrite')
+    overwrite_if_duration = BooleanField('Check duration. Overwrite', default=True)
 
     submit = SubmitField('Submit')
 
@@ -43,6 +44,8 @@ def index():
         input_keys_str = form.input_keys_str.data
         output_keys_str = form.output_keys_str.data
         overwrite_files = form.overwrite_files.data
+        overwrite_if_duration = form.overwrite_if_duration.data
+        print(f"0verwrite if duration = {overwrite_if_duration}")
 
         print("FFmpeg folder:", ffmpeg_folder)
         print("Input folder:", input_folder)
@@ -61,10 +64,22 @@ def index():
                 output_file_mask=output_file_mask,
                 input_keys_str=input_keys_str,
                 output_keys_str=output_keys_str,
-                overwrite_files=overwrite_files
+                overwrite_files=overwrite_files,
+                overwrite_if_duration=overwrite_if_duration
             )
             convertor = localvideo.FFMPEGConverter(config)
-            convertor.convert()
+            files_to_convert = convertor.get_files()
+            unconverted_files = convertor.get_unconverted_files(files_to_convert)
+            percent_unready = round(len(unconverted_files)/len(files_to_convert), 2)
+            # print(f"Files to convert {files_to_convert}")
+            print(f"We have {100-percent_unready}% converted files.")
+            print(f"The number of unconverted is {len(unconverted_files)}")
+            print(f"The number of all files is {len(files_to_convert)}")
+            if len(unconverted_files)>10:
+                print(unconverted_files[:5]," ... ",unconverted_files[-5:])
+            else:
+                print(unconverted_files)
+            convertor.convert(files_to_convert)
         elif request.method == "POST" and not form.validate():
             flash('Please correct the errors in the form')
 
