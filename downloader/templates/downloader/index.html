@@ -10,46 +10,32 @@
     </head>
     <body>
 
-        <h2>Video downloader</h2>
-        <form action="{{ url_for('.index') }}" method="post">
 
-            <p>
-
-                <div class="inline-div form-group">
-                    <label for="n_threads">Select number of download streams:</label>
-                    <select id="n_threads" name="n_threads"></select>
-                </div>
-                <div class="inline-div form-group">
-                    <label for="delay_sec">Select deley between downloads starts in seconds:</label>
-                    <input type="number" id="delay_sec" name="delay_sec" value="0"></input>
-                </div>
-            </p>
-            <p>
+        <form action="{{ url_for('downloader.index') }}" method="post">
+            {{ form.hidden_tag() }}
+            <fieldset>
+                <legend>Dropbox downloader</legend>
                 <div class="form-group">
-                    <label for="file_mask">File mask for select files for download:</label>
-                    <input type="text" id="file_mask" name="file_mask" placeholder="*.ts" value="*.ts">
+                    {{ form.dropbox_folder.label }} {{ form.dropbox_folder(size=32) }}
                 </div>
-            </p>
-            <p>
-                <div class="inline-div form-group">
-                    <label for="dropbox_folder">Select DROPBOX folder:</label>
-                    <input type="text" id="dropbox_folder" name="dropbox_folder">
+                <div class="form-group">
+                    {{ form.access_token.label }} {{ form.access_token(size=32) }}
                 </div>
-                <div class="inline-div form-group">
-                    <label for="access_token">Access toke to dropbox:</label>
-                    <input type="text" id="access_token" name="access_token">
+                <div class="form-group">
+                    {{ form.input_folder.label }} {{ form.input_folder(size=32) }}
                 </div>
-            </p>
-            <p>
-                <div class="inline-div form-group">
-                    <label for="input_folder">Local folder to download from dropbox:</label>
-                    <input type="text" id="input_folder" name="input_folder">
+                <div class="form-group">
+                    {{ form.n_threads.label }} {{ form.n_threads() }}
                 </div>
-            </p>
+                <div class="form-group">
+                    {{ form.delay_sec.label }} {{ form.delay_sec(size=5) }}
+                </div>
+                <div class="form-group">
+                    {{ form.file_mask.label }} {{ form.file_mask(size=32) }}
+                </div>
+            </fieldset>
 
-            <p>
-                <input type="submit" value="Start download">
-            </p>
+            <input type="submit" value="Start download">
         </form>
 
         <div id="logs">

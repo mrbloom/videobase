@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request
 
 from .tools.downloadvideo import DropboxDownloaderConfig, DropboxDownloader
+from .forms import DownloadForm
 
 downloader = Blueprint('downloader', __name__, template_folder='templates', static_folder='static')
 
@@ -10,12 +11,14 @@ N_MAX_THREADS = 32
 @downloader.route('/', methods=["POST", "GET"])
 def index():
     if request.method == "POST":
-        dropbox_folder = request.form['dropbox_folder']
-        access_token = request.form['access_token']
-        input_folder = request.form['input_folder']
-        n_threads = int(request.form['n_threads'])
-        delay_sec = int(request.form['delay_sec'])
-        file_mask = request.form['file_mask']
+        form = DownloadForm()
+        if form.validate_on_submit():
+            dropbox_folder = form.dropbox_folder.data
+            access_token = form.access_token.data
+            input_folder = form.input_folder.data
+            n_threads = int(form.n_threads.data)
+            delay_sec = form.delay_sec.data
+            file_mask = form.file_mask.data
 
         print("Input folder:", input_folder)
         print("Dropbox folder:", dropbox_folder)
@@ -32,5 +35,5 @@ def index():
             )
             DropboxDownloader(c).download()
 
-    return render_template('downloader/index.html', n_threads=N_MAX_THREADS)
+    return render_template('downloader/index.html', n_threads=N_MAX_THREADS, form=form)
     # return "downloader"
