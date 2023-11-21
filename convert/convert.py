@@ -69,12 +69,22 @@ def index():
             )
             convertor = localvideo.FFMPEGConverter(config)
             files_to_convert = convertor.get_files()
+            if not files_to_convert:
+                print(f"No files with mask {input_file_mask} to convert")
+                flash(f"No files with mask {input_file_mask} to convert")
+                return render_template('convert/index.html', form=form, n_threads=N_MAX_THREADS)
+
             unconverted_files = convertor.get_unconverted_files(files_to_convert)
-            percent_unready = round(len(unconverted_files)/len(files_to_convert), 2)
+            percent_unready = round(len(unconverted_files) / len(files_to_convert), 2)
+
             # print(f"Files to convert {files_to_convert}")
             print(f"We have {100-percent_unready}% converted files.")
             print(f"The number of unconverted is {len(unconverted_files)}")
             print(f"The number of all files is {len(files_to_convert)}")
+            flash(f"We have {100-percent_unready}% converted files.")
+            flash(f"The number of unconverted is {len(unconverted_files)}")
+            flash(f"The number of all files is {len(files_to_convert)}")
+
             if len(unconverted_files)>10:
                 print(unconverted_files[:5]," ... ",unconverted_files[-5:])
             else:
