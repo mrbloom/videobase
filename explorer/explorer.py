@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, send_file, current_app, request, redirect, url_for
 import os
 
+from explorer.forms import VideosConvertedForm
+
 explorer = Blueprint('explorer', __name__, template_folder='templates', static_folder='static')
 
 
@@ -33,7 +35,10 @@ def index():
     videos_folder = current_app.config.get('VIDEOS_FOLDER', os.path.join(current_app.root_path, 'static', 'videos'))
     print(f"videos_folder = {videos_folder}")
     videos = get_files_recursive(videos_folder)
-    return render_template('explorer/index.html', videos=videos)
+
+    form = VideosConvertedForm()
+
+    return render_template('explorer/index.html', videos=videos, form=form)
 
 
 @explorer.route('/play/<path:video_path>')

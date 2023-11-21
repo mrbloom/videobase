@@ -5,14 +5,37 @@
     <title>Video files explorer</title>
 </head>
 <body>
-    <form method="post">
-        <label for="root_folder">Set Root Folder:</label>
-        <input type="text" id="root_folder" name="root_folder" placeholder="/path/to/video/files">
-        <input type="submit" value="Set Folder">
-    </form>
-    <hr>
+    <h2>Video Conversion Files Explorer:</h2>
+    <form action="{{ url_for('.index') }}" method="post">
+        {{ form.hidden_tag() }}
+        <fieldset>
+            <legend>Input parameters:</legend>
 
-   <h2>Video Files:</h2>
+            <div class="form-group">
+                <label for="input_folder">{{ form.input_folder.label }}</label>
+                {{ form.input_folder(id="input_folder", class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                <label for="input_file_mask">{{ form.input_file_mask.label }}</label>
+                {{ form.input_file_mask(id="input_file_mask", class="form-control") }}
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Output parameters:</legend>
+
+            <div class="form-group">
+                <label for="output_folder">{{ form.output_folder.label }}</label>
+                {{ form.output_folder(id="output_folder", class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                <label for="output_file_mask">{{ form.output_file_mask.label }}</label>
+                {{ form.output_file_mask(id="output_file_mask", class="form-control") }}
+            </div>
+        </fieldset>
+    </form>
 
     <div id="videoList">
         <ul>
