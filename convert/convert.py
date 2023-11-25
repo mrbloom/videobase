@@ -1,3 +1,6 @@
+import os
+
+import ffmpeg
 from flask import Blueprint, render_template, request, flash, current_app
 # from flask_socketio import emit
 # from . import socketio  # Import the socketio instance
@@ -24,6 +27,8 @@ class VideoConversionForm(Form):
     output_file_mask = StringField('Output file mask', [validators.InputRequired()])
     overwrite_files = BooleanField('Overwrite')
     overwrite_if_duration = BooleanField('Check duration. Overwrite', default=True)
+    check_codecs = BooleanField('Check Video Codecs Before Converting', default=True)
+
 
     submit = SubmitField('Submit')
 
@@ -45,6 +50,8 @@ def index():
         output_keys_str = form.output_keys_str.data
         overwrite_files = form.overwrite_files.data
         overwrite_if_duration = form.overwrite_if_duration.data
+        check_codecs = form.check_codecs.data
+
         print(f"0verwrite if duration = {overwrite_if_duration}")
 
         print("FFmpeg folder:", ffmpeg_folder)
@@ -89,8 +96,37 @@ def index():
                 print(unconverted_files[:5]," ... ",unconverted_files[-5:])
             else:
                 print(unconverted_files)
+
+            if check_codecs:
+                # Перевірка кодеків для кожного файлу
+                for file_path in files_to_convert:
+                    input_codec = get_video_codec(file_path)
+                    output_file_path = convertor.make_output_path(file_path, input_folder, output_folder)
+                    output_codec = get_video_codec(output_file_path) if os.path.exists(output_file_path) else None
+
+                    if input_codec == output_codec:
+                        print(f"Codecs are equal. Lets repack {file_path} => {output_file_path}")
+                        ffmpeg.input(file_path).output(output_file_path, vcodec='copy', acodec='copy').run()
+                    else:
+                        # Звичайна логіка конвертації
+                        convertor.convert([file_path])
+            else:
+                # Звичайна логіка конвертації
+                convertor.convert(files_to_convert)
+
             convertor.convert(files_to_convert)
         elif request.method == "POST" and not form.validate():
             flash('Please correct the errors in the form')
 
     return render_template('convert/index.html', form=form, n_threads=N_MAX_THREADS)
+
+# Функція перевірки кодеку
+def get_video_codec(file_path):
+    try:
+        probe = ffmpeg.probe(file_path)
+        video_streams = [stream for stream in probe['streams'] if stream['codec_type'] == 'video']
+        if video_streams:
+            return video_streams[0]['codec_name']
+    except ffmpeg.Error as e:
+        print(f"An error occurred: {e.stderr.decode().strip()}")
+        return None
