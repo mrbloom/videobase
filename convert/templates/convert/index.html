@@ -83,13 +83,13 @@
 <!--                    {{ form.overwrite_if_duration(id="overwrite_if_duration", class="form-control") }}-->
 <!--                </div>-->
                 <div class="form-group">
-                    <label for="overwrite_if_duration">{{ form.overwrite_if_duration.label }}</label>
-                    <input class="form-control" id="overwrite_if_duration" name="overwrite_if_duration" type="checkbox" value="y" {{ 'checked' if form.overwrite_if_duration.default }} >
+                    <label for="check_codecs">{{ form.check_codecs.label }}</label>
+                    <input class="form-control" id="check_codecs" name="check_codecs" type="checkbox" value="y" {{ 'checked' if form.check_codecs.default }} >
                 </div>
 
                 <div class="form-group">
-                    <label for="check_codecs">{{ form.check_codecs.label }}</label>
-                    {{ form.check_codecs(id="check_codecs", class="form-control") }}
+                    <label for="overwrite_if_duration">{{ form.overwrite_if_duration.label }}</label>
+                    <input class="form-control" id="overwrite_if_duration" name="overwrite_if_duration" type="checkbox" value="y" {{ 'checked' if form.overwrite_if_duration.default }} >
                 </div>
 
             </fieldset>
